@@ -60,9 +60,7 @@ app.use(
   userRoutes
 );
 
-app.get("/", (req, res) => {
-  res.send("Inventory SaaS Backend Running");
-});
+
 
 
 // MONGODB
@@ -83,6 +81,9 @@ mongoose.connect(
 });
 
 
+app.get("/", (req, res) => {
+  res.send("Inventory SaaS Backend Running");
+});
 
 // SERVER
 const PORT =
