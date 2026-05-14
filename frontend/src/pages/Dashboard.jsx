@@ -24,7 +24,6 @@ import {
 } from "recharts";
 
 const Dashboard = () => {
-
   // STATS
   const [stats, setStats] = useState({
     warehouses: 0,
@@ -46,14 +45,10 @@ const Dashboard = () => {
   const token =
     localStorage.getItem("token");
 
-
-
   // FETCH DASHBOARD DATA
   const fetchDashboardData =
     useCallback(async () => {
-
       try {
-
         const headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -64,7 +59,6 @@ const Dashboard = () => {
           transferRes,
           inventoryRes,
         ] = await Promise.all([
-
           axios.get(
             "https://inventory-saas-system.onrender.com/api/warehouses",
             { headers }
@@ -86,8 +80,6 @@ const Dashboard = () => {
           ),
         ]);
 
-
-
         // UPDATE STATS
         setStats({
           warehouses:
@@ -103,13 +95,10 @@ const Dashboard = () => {
             inventoryRes.data.length,
         });
 
-
-
         // BAR CHART DATA
         const stockData =
           warehouseRes.data.map(
             (warehouse) => {
-
               const warehouseProducts =
                 productRes.data.filter(
                   (product) =>
@@ -132,8 +121,6 @@ const Dashboard = () => {
           );
 
         setWarehouseStock(stockData);
-
-
 
         // PIE CHART DATA
         const inCount =
@@ -161,43 +148,27 @@ const Dashboard = () => {
           },
         ]);
 
-
-
         // RECENT TRANSFERS
         setRecentTransfers(
           transferRes.data.slice(0, 5)
         );
-
       } catch (err) {
-
         console.log(
           "Dashboard Error:",
           err
         );
-
       }
-
     }, [token]);
 
-
-
   useEffect(() => {
-
     fetchDashboardData();
-
   }, [fetchDashboardData]);
 
-
-
   return (
-
-    <Layout>
-
+    <DashboardLayout>
       <div className="space-y-8">
-
         {/* HEADER */}
         <div>
-
           <h1 className="text-5xl font-bold text-gray-900">
             Dashboard
           </h1>
@@ -205,19 +176,13 @@ const Dashboard = () => {
           <p className="text-gray-500 mt-2 text-lg">
             Inventory system overview
           </p>
-
         </div>
-
-
 
         {/* STATS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-
           {/* WAREHOUSES */}
           <div className="bg-white p-6 rounded-2xl shadow-sm border">
-
             <div className="flex items-center gap-4">
-
               <div className="bg-indigo-100 p-4 rounded-2xl">
                 <Warehouse
                   size={30}
@@ -226,7 +191,6 @@ const Dashboard = () => {
               </div>
 
               <div>
-
                 <p className="text-gray-500">
                   Warehouses
                 </p>
@@ -234,20 +198,13 @@ const Dashboard = () => {
                 <h2 className="text-4xl font-bold">
                   {stats.warehouses}
                 </h2>
-
               </div>
-
             </div>
-
           </div>
-
-
 
           {/* PRODUCTS */}
           <div className="bg-white p-6 rounded-2xl shadow-sm border">
-
             <div className="flex items-center gap-4">
-
               <div className="bg-green-100 p-4 rounded-2xl">
                 <Package
                   size={30}
@@ -256,7 +213,6 @@ const Dashboard = () => {
               </div>
 
               <div>
-
                 <p className="text-gray-500">
                   Products
                 </p>
@@ -264,20 +220,13 @@ const Dashboard = () => {
                 <h2 className="text-4xl font-bold">
                   {stats.products}
                 </h2>
-
               </div>
-
             </div>
-
           </div>
-
-
 
           {/* TRANSFERS */}
           <div className="bg-white p-6 rounded-2xl shadow-sm border">
-
             <div className="flex items-center gap-4">
-
               <div className="bg-yellow-100 p-4 rounded-2xl">
                 <ArrowLeftRight
                   size={30}
@@ -286,7 +235,6 @@ const Dashboard = () => {
               </div>
 
               <div>
-
                 <p className="text-gray-500">
                   Transfers
                 </p>
@@ -294,20 +242,13 @@ const Dashboard = () => {
                 <h2 className="text-4xl font-bold">
                   {stats.transfers}
                 </h2>
-
               </div>
-
             </div>
-
           </div>
-
-
 
           {/* INVENTORY */}
           <div className="bg-white p-6 rounded-2xl shadow-sm border">
-
             <div className="flex items-center gap-4">
-
               <div className="bg-red-100 p-4 rounded-2xl">
                 <ClipboardList
                   size={30}
@@ -316,7 +257,6 @@ const Dashboard = () => {
               </div>
 
               <div>
-
                 <p className="text-gray-500">
                   Inventory Logs
                 </p>
@@ -324,33 +264,25 @@ const Dashboard = () => {
                 <h2 className="text-4xl font-bold">
                   {stats.inventoryLogs}
                 </h2>
-
               </div>
-
             </div>
-
           </div>
-
         </div>
-
-
 
         {/* CHARTS */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-
           {/* BAR CHART */}
           <div className="bg-white rounded-2xl shadow-sm border p-6">
-
             <h2 className="text-2xl font-bold mb-6">
               Warehouse Stock
             </h2>
 
             <div className="w-full h-[350px]">
-
-              <ResponsiveContainer width="100%" height="100%">
-
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
+              >
                 <BarChart data={warehouseStock}>
-
                   <XAxis dataKey="name" />
 
                   <YAxis />
@@ -362,30 +294,23 @@ const Dashboard = () => {
                     fill="#4f46e5"
                     radius={[10, 10, 0, 0]}
                   />
-
                 </BarChart>
-
               </ResponsiveContainer>
-
             </div>
-
           </div>
-
-
 
           {/* PIE CHART */}
           <div className="bg-white rounded-2xl shadow-sm border p-6">
-
             <h2 className="text-2xl font-bold mb-6">
               Inventory Flow
             </h2>
 
             <div className="w-full h-[350px]">
-
-              <ResponsiveContainer width="100%" height="100%">
-
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
+              >
                 <PieChart>
-
                   <Pie
                     data={inventoryData}
                     dataKey="value"
@@ -393,46 +318,30 @@ const Dashboard = () => {
                     outerRadius={120}
                     label
                   >
-
                     <Cell fill="#4f46e5" />
 
                     <Cell fill="#ef4444" />
-
                   </Pie>
 
                   <Tooltip />
-
                 </PieChart>
-
               </ResponsiveContainer>
-
             </div>
-
           </div>
-
         </div>
-
-
 
         {/* RECENT TRANSFERS */}
         <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-
           <div className="p-6 border-b">
-
             <h2 className="text-2xl font-bold">
               Recent Transfers
             </h2>
-
           </div>
 
           <div className="overflow-x-auto">
-
             <table className="w-full">
-
               <thead className="bg-gray-100">
-
                 <tr>
-
                   <th className="text-left p-5">
                     Product
                   </th>
@@ -448,54 +357,51 @@ const Dashboard = () => {
                   <th className="text-left p-5">
                     Quantity
                   </th>
-
                 </tr>
-
               </thead>
 
               <tbody>
-
                 {recentTransfers.map(
                   (transfer) => (
-
                     <tr
                       key={transfer._id}
                       className="border-t hover:bg-gray-50"
                     >
-
                       <td className="p-5">
-                        {transfer.productId?.name}
+                        {
+                          transfer.productId
+                            ?.name
+                        }
                       </td>
 
                       <td className="p-5">
-                        {transfer.fromWarehouseId?.name}
+                        {
+                          transfer
+                            .fromWarehouseId
+                            ?.name
+                        }
                       </td>
 
                       <td className="p-5">
-                        {transfer.toWarehouseId?.name}
+                        {
+                          transfer
+                            .toWarehouseId
+                            ?.name
+                        }
                       </td>
 
                       <td className="p-5 font-semibold">
                         {transfer.quantity}
                       </td>
-
                     </tr>
-
                   )
                 )}
-
               </tbody>
-
             </table>
-
           </div>
-
         </div>
-
       </div>
-
-    </Layout>
-
+    </DashboardLayout>
   );
 };
 
