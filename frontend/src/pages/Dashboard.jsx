@@ -1,435 +1,8 @@
-// import { useEffect, useState } from "react";
-
-// import axios from "axios";
-
-// import DashboardLayout from "../layouts/DashboardLayout";
-
-// import {
-//   ResponsiveContainer,
-//   BarChart,
-//   Bar,
-//   XAxis,
-//   YAxis,
-//   Tooltip,
-//   PieChart,
-//   Pie,
-//   Cell,
-// } from "recharts";
-
-// import {
-//   Warehouse,
-//   Package,
-//   ArrowRightLeft,
-//   ClipboardList,
-// } from "lucide-react";
-
-// const Dashboard = () => {
-//   const [stats, setStats] = useState({
-//     warehouses: 0,
-//     products: 0,
-//     transfers: 0,
-//     inventoryLogs: 0,
-//   });
-
-//   const token =
-//     localStorage.getItem("token");
-
-//   useEffect(() => {
-//     fetchDashboard();
-//   }, []);
-
-//   const fetchDashboard =
-//     async () => {
-//       try {
-//         const headers = {
-//           Authorization: `Bearer ${token}`,
-//         };
-
-//         const [
-//           warehouseRes,
-//           productRes,
-//           transferRes,
-//           inventoryRes,
-//         ] = await Promise.all([
-//           axios.get(
-//             "https://inventory-saas-system.onrender.com/api/warehouses",
-//             { headers }
-//           ),
-
-//           axios.get(
-//             "https://inventory-saas-system.onrender.com/api/products",
-//             { headers }
-//           ),
-
-//           axios.get(
-//             "https://inventory-saas-system.onrender.com/api/transfers",
-//             { headers }
-//           ),
-
-//           axios.get(
-//             "https://inventory-saas-system.onrender.com/api/inventory",
-//             { headers }
-//           ),
-//         ]);
-
-//         setStats({
-//           warehouses:
-//             warehouseRes.data.length,
-
-//           products:
-//             productRes.data.length,
-
-//           transfers:
-//             transferRes.data.length,
-
-//           inventoryLogs:
-//             inventoryRes.data.length,
-//         });
-//       } catch (err) {
-//         console.log(err);
-//       }
-//     };
-
-//   // BAR CHART DATA
-//   const barData = [
-//     {
-//       name: "Products",
-//       value: stats.products,
-//     },
-
-//     {
-//       name: "Transfers",
-//       value: stats.transfers,
-//     },
-
-//     {
-//       name: "Inventory",
-//       value: stats.inventoryLogs,
-//     },
-//   ];
-
-//   // PIE CHART DATA
-//   const pieData = [
-//     {
-//       name: "Warehouses",
-//       value: stats.warehouses,
-//     },
-
-//     {
-//       name: "Products",
-//       value: stats.products,
-//     },
-
-//     {
-//       name: "Transfers",
-//       value: stats.transfers,
-//     },
-
-//     {
-//       name: "Inventory",
-//       value: stats.inventoryLogs,
-//     },
-//   ];
-
-//   const COLORS = [
-//     "#4F46E5",
-//     "#22C55E",
-//     "#F59E0B",
-//     "#EF4444",
-//   ];
-
-//   return (
-//     <DashboardLayout>
-
-//       <div className="space-y-8">
-
-//         {/* HEADER */}
-//         <div>
-//           <h1 className="text-5xl font-bold text-gray-900">
-//             Dashboard
-//           </h1>
-
-//           <p className="text-gray-500 mt-2 text-lg">
-//             Inventory system overview
-//           </p>
-//         </div>
-
-//         {/* TOP CARDS */}
-//         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-
-//           {/* WAREHOUSES */}
-//           <div className="bg-white rounded-3xl shadow-sm p-6 flex items-center justify-between">
-
-//             <div>
-
-//               <div className="bg-indigo-100 w-24 h-24 rounded-3xl flex items-center justify-center">
-//                 <Warehouse
-//                   size={48}
-//                   className="text-indigo-600"
-//                 />
-//               </div>
-
-//             </div>
-
-//             <div className="text-right">
-
-//               <p className="text-gray-500 text-2xl">
-//                 Warehouses
-//               </p>
-
-//               <h2 className="text-6xl font-bold mt-2">
-//                 {stats.warehouses}
-//               </h2>
-
-//             </div>
-
-//           </div>
-
-//           {/* PRODUCTS */}
-//           <div className="bg-white rounded-3xl shadow-sm p-6 flex items-center justify-between">
-
-//             <div>
-
-//               <div className="bg-green-100 w-24 h-24 rounded-3xl flex items-center justify-center">
-//                 <Package
-//                   size={48}
-//                   className="text-green-600"
-//                 />
-//               </div>
-
-//             </div>
-
-//             <div className="text-right">
-
-//               <p className="text-gray-500 text-2xl">
-//                 Products
-//               </p>
-
-//               <h2 className="text-6xl font-bold text-green-600 mt-2">
-//                 {stats.products}
-//               </h2>
-
-//             </div>
-
-//           </div>
-
-//           {/* TRANSFERS */}
-//           <div className="bg-white rounded-3xl shadow-sm p-6 flex items-center justify-between">
-
-//             <div>
-
-//               <div className="bg-yellow-100 w-24 h-24 rounded-3xl flex items-center justify-center">
-//                 <ArrowRightLeft
-//                   size={48}
-//                   className="text-yellow-600"
-//                 />
-//               </div>
-
-//             </div>
-
-//             <div className="text-right">
-
-//               <p className="text-gray-500 text-2xl">
-//                 Transfers
-//               </p>
-
-//               <h2 className="text-6xl font-bold text-yellow-500 mt-2">
-//                 {stats.transfers}
-//               </h2>
-
-//             </div>
-
-//           </div>
-
-//           {/* INVENTORY */}
-//           <div className="bg-white rounded-3xl shadow-sm p-6 flex items-center justify-between">
-
-//             <div>
-
-//               <div className="bg-red-100 w-24 h-24 rounded-3xl flex items-center justify-center">
-//                 <ClipboardList
-//                   size={48}
-//                   className="text-red-500"
-//                 />
-//               </div>
-
-//             </div>
-
-//             <div className="text-right">
-
-//               <p className="text-gray-500 text-2xl">
-//                 Inventory Logs
-//               </p>
-
-//               <h2 className="text-6xl font-bold text-red-500 mt-2">
-//                 {stats.inventoryLogs}
-//               </h2>
-
-//             </div>
-
-//           </div>
-
-//         </div>
-
-//         {/* CHARTS */}
-//         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-
-//           {/* BAR CHART */}
-//           <div className="bg-white rounded-3xl shadow-sm p-8">
-
-//             <h2 className="text-4xl font-bold mb-8">
-//               Warehouse Stock
-//             </h2>
-
-//             <div className="w-full h-[450px]">
-
-//               <ResponsiveContainer
-//                 width="100%"
-//                 height="100%"
-//               >
-
-//                 <BarChart data={barData}>
-
-//                   <XAxis
-//                     dataKey="name"
-//                     tick={{
-//                       fontSize: 18,
-//                     }}
-//                   />
-
-//                   <YAxis />
-
-//                   <Tooltip />
-
-//                   <Bar
-//                     dataKey="value"
-//                     radius={[12, 12, 0, 0]}
-//                   >
-
-//                     <Cell fill="#22C55E" />
-//                     <Cell fill="#F59E0B" />
-//                     <Cell fill="#6366F1" />
-
-//                   </Bar>
-
-//                 </BarChart>
-
-//               </ResponsiveContainer>
-
-//             </div>
-
-//           </div>
-
-//           {/* PIE CHART */}
-//           <div className="bg-white rounded-3xl shadow-sm p-8">
-
-//             <h2 className="text-4xl font-bold mb-8">
-//               Inventory Flow
-//             </h2>
-
-//             <div className="w-full h-[450px]">
-
-//               <ResponsiveContainer
-//                 width="100%"
-//                 height="100%"
-//               >
-
-//                 <PieChart>
-
-//                   <Pie
-//                     data={pieData}
-//                     dataKey="value"
-//                     outerRadius={140}
-//                     label
-//                   >
-
-//                     {pieData.map(
-//                       (entry, index) => (
-//                         <Cell
-//                           key={index}
-//                           fill={
-//                             COLORS[
-//                               index %
-//                                 COLORS.length
-//                             ]
-//                           }
-//                         />
-//                       )
-//                     )}
-
-//                   </Pie>
-
-//                   <Tooltip />
-
-//                 </PieChart>
-
-//               </ResponsiveContainer>
-
-//             </div>
-
-//           </div>
-
-//         </div>
-
-//         {/* RECENT ACTIVITY */}
-//         <div className="bg-white rounded-3xl shadow-sm p-8">
-
-//           <h2 className="text-4xl font-bold mb-8">
-//             Recent Activity
-//           </h2>
-
-//           <div className="space-y-5">
-
-//             <div className="flex justify-between items-center border-b pb-4">
-
-//               <span className="text-xl text-gray-600">
-//                 Product Added
-//               </span>
-
-//               <span className="font-semibold text-xl">
-//                 iPhone 17
-//               </span>
-
-//             </div>
-
-//             <div className="flex justify-between items-center border-b pb-4">
-
-//               <span className="text-xl text-gray-600">
-//                 Warehouse Updated
-//               </span>
-
-//               <span className="font-semibold text-xl">
-//                 Bengaluru
-//               </span>
-
-//             </div>
-
-//             <div className="flex justify-between items-center">
-
-//               <span className="text-xl text-gray-600">
-//                 Transfer Completed
-//               </span>
-
-//               <span className="font-semibold text-xl">
-//                 Chennai → Hyderabad
-//               </span>
-
-//             </div>
-
-//           </div>
-
-//         </div>
-
-//       </div>
-
-//     </DashboardLayout>
-//   );
-// };
-
-// export default Dashboard;
-
-
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 
 import axios from "axios";
 
@@ -455,6 +28,7 @@ import {
 } from "lucide-react";
 
 const Dashboard = () => {
+
   const [stats, setStats] = useState({
     warehouses: 0,
     products: 0,
@@ -465,13 +39,14 @@ const Dashboard = () => {
   const token =
     localStorage.getItem("token");
 
-  useEffect(() => {
-    fetchDashboard();
-  }, []);
 
+
+  // FETCH DASHBOARD DATA
   const fetchDashboard =
-    async () => {
+    useCallback(async () => {
+
       try {
+
         const headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -482,6 +57,7 @@ const Dashboard = () => {
           transferRes,
           inventoryRes,
         ] = await Promise.all([
+
           axios.get(
             "https://inventory-saas-system.onrender.com/api/warehouses",
             { headers }
@@ -503,6 +79,8 @@ const Dashboard = () => {
           ),
         ]);
 
+
+
         setStats({
           warehouses:
             warehouseRes.data.length,
@@ -516,10 +94,25 @@ const Dashboard = () => {
           inventoryLogs:
             inventoryRes.data.length,
         });
+
       } catch (err) {
+
         console.log(err);
+
       }
-    };
+
+    }, [token]);
+
+
+
+  // LOAD DATA
+  useEffect(() => {
+
+    fetchDashboard();
+
+  }, [fetchDashboard]);
+
+
 
   // BAR CHART DATA
   const barData = [
@@ -538,6 +131,8 @@ const Dashboard = () => {
       value: stats.inventoryLogs,
     },
   ];
+
+
 
   // PIE CHART DATA
   const pieData = [
@@ -562,6 +157,8 @@ const Dashboard = () => {
     },
   ];
 
+
+
   const COLORS = [
     "#4F46E5",
     "#22C55E",
@@ -569,13 +166,17 @@ const Dashboard = () => {
     "#EF4444",
   ];
 
+
+
   return (
+
     <DashboardLayout>
 
       <div className="space-y-6">
 
         {/* HEADER */}
         <div>
+
           <h1 className="text-4xl font-bold text-gray-900">
             Dashboard
           </h1>
@@ -583,7 +184,10 @@ const Dashboard = () => {
           <p className="text-gray-500 mt-1 text-base">
             Inventory system overview
           </p>
+
         </div>
+
+
 
         {/* TOP CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
@@ -594,10 +198,12 @@ const Dashboard = () => {
             <div>
 
               <div className="bg-indigo-100 w-16 h-16 rounded-2xl flex items-center justify-center">
+
                 <Warehouse
                   size={34}
                   className="text-indigo-600"
                 />
+
               </div>
 
             </div>
@@ -616,16 +222,20 @@ const Dashboard = () => {
 
           </div>
 
+
+
           {/* PRODUCTS */}
           <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center justify-between">
 
             <div>
 
               <div className="bg-green-100 w-16 h-16 rounded-2xl flex items-center justify-center">
+
                 <Package
                   size={34}
                   className="text-green-600"
                 />
+
               </div>
 
             </div>
@@ -644,16 +254,20 @@ const Dashboard = () => {
 
           </div>
 
+
+
           {/* TRANSFERS */}
           <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center justify-between">
 
             <div>
 
               <div className="bg-yellow-100 w-16 h-16 rounded-2xl flex items-center justify-center">
+
                 <ArrowRightLeft
                   size={34}
                   className="text-yellow-600"
                 />
+
               </div>
 
             </div>
@@ -672,16 +286,20 @@ const Dashboard = () => {
 
           </div>
 
+
+
           {/* INVENTORY */}
           <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center justify-between">
 
             <div>
 
               <div className="bg-red-100 w-16 h-16 rounded-2xl flex items-center justify-center">
+
                 <ClipboardList
                   size={34}
                   className="text-red-500"
                 />
+
               </div>
 
             </div>
@@ -701,6 +319,8 @@ const Dashboard = () => {
           </div>
 
         </div>
+
+
 
         {/* CHARTS */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
@@ -750,6 +370,8 @@ const Dashboard = () => {
             </div>
 
           </div>
+
+
 
           {/* PIE CHART */}
           <div className="bg-white rounded-2xl shadow-sm p-5">
@@ -801,6 +423,8 @@ const Dashboard = () => {
           </div>
 
         </div>
+
+
 
         {/* RECENT ACTIVITY */}
         <div className="bg-white rounded-2xl shadow-sm p-5">
@@ -854,6 +478,7 @@ const Dashboard = () => {
       </div>
 
     </DashboardLayout>
+
   );
 };
 
