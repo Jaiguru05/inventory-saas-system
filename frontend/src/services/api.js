@@ -22,7 +22,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: "https://inventory-saas-system.onrender.com",
 });
 
 API.interceptors.request.use((req) => {
