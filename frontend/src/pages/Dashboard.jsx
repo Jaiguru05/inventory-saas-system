@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 
 import axios from "axios";
 
-import Layout from "../layouts/Layout";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 import {
   Warehouse,
