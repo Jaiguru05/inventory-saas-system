@@ -511,7 +511,6 @@
 
 
 
-
 import { useEffect, useState, useCallback } from "react";
 
 import axios from "axios";
@@ -539,6 +538,7 @@ import {
 
 const Dashboard = () => {
 
+  // STATS
   const [stats, setStats] = useState({
     warehouses: 0,
     products: 0,
@@ -546,6 +546,7 @@ const Dashboard = () => {
     inventoryLogs: 0,
   });
 
+  // CHART DATA
   const [warehouseStock, setWarehouseStock] =
     useState([]);
 
@@ -560,6 +561,7 @@ const Dashboard = () => {
 
 
 
+  // FETCH DASHBOARD DATA
   const fetchDashboardData =
     useCallback(async () => {
 
@@ -569,8 +571,6 @@ const Dashboard = () => {
           Authorization: `Bearer ${token}`,
         };
 
-
-
         const [
           warehouseRes,
           productRes,
@@ -579,28 +579,29 @@ const Dashboard = () => {
         ] = await Promise.all([
 
           axios.get(
-            "http://localhost:8000/api/warehouses",
+            "https://inventory-saas-system.onrender.com/api/warehouses",
             { headers }
           ),
 
           axios.get(
-            "http://localhost:8000/api/products",
+            "https://inventory-saas-system.onrender.com/api/products",
             { headers }
           ),
 
           axios.get(
-            "http://localhost:8000/api/transfers",
+            "https://inventory-saas-system.onrender.com/api/transfers",
             { headers }
           ),
 
           axios.get(
-            "http://localhost:8000/api/inventory",
+            "https://inventory-saas-system.onrender.com/api/inventory",
             { headers }
           ),
         ]);
 
 
 
+        // UPDATE STATS
         setStats({
           warehouses:
             warehouseRes.data.length,
@@ -617,6 +618,7 @@ const Dashboard = () => {
 
 
 
+        // BAR CHART DATA
         const stockData =
           warehouseRes.data.map(
             (warehouse) => {
@@ -646,14 +648,19 @@ const Dashboard = () => {
 
 
 
+        // PIE CHART DATA
         const inCount =
           inventoryRes.data.filter(
-            (item) => item.type === "IN"
+            (item) =>
+              item.type === "IN" ||
+              item.type === "Stock In"
           ).length;
 
         const outCount =
           inventoryRes.data.filter(
-            (item) => item.type === "OUT"
+            (item) =>
+              item.type === "OUT" ||
+              item.type === "Stock Out"
           ).length;
 
         setInventoryData([
@@ -669,13 +676,17 @@ const Dashboard = () => {
 
 
 
+        // RECENT TRANSFERS
         setRecentTransfers(
           transferRes.data.slice(0, 5)
         );
 
       } catch (err) {
 
-        console.log(err);
+        console.log(
+          "Dashboard Error:",
+          err
+        );
 
       }
 
@@ -691,7 +702,6 @@ const Dashboard = () => {
 
 
 
-
   return (
 
     <Layout>
@@ -701,7 +711,7 @@ const Dashboard = () => {
         {/* HEADER */}
         <div>
 
-          <h1 className="text-4xl font-bold text-gray-900">
+          <h1 className="text-5xl font-bold text-gray-900">
             Dashboard
           </h1>
 
@@ -928,8 +938,6 @@ const Dashboard = () => {
 
           </div>
 
-
-
           <div className="overflow-x-auto">
 
             <table className="w-full">
@@ -957,8 +965,6 @@ const Dashboard = () => {
                 </tr>
 
               </thead>
-
-
 
               <tbody>
 

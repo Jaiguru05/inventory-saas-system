@@ -338,6 +338,8 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
 import Layout from "../layouts/Layout";
+const [products, setProducts] = useState([]);
+const [warehouses, setWarehouses] = useState([]);
 
 const Inventory = () => {
 
@@ -370,7 +372,7 @@ const Inventory = () => {
       try {
 
         const res = await axios.get(
-          "http://localhost:8000/api/products",
+          "https://inventory-saas-system.onrender.com/api/products",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -397,7 +399,7 @@ const Inventory = () => {
       try {
 
         const res = await axios.get(
-          "http://localhost:8000/api/warehouses",
+          "https://inventory-saas-system.onrender.com/api/warehouses",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -424,7 +426,7 @@ const Inventory = () => {
       try {
 
         const res = await axios.get(
-          "http://localhost:8000/api/inventory",
+          "https://inventory-saas-system.onrender.com/api/inventory",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -479,7 +481,7 @@ const Inventory = () => {
     try {
 
       await axios.post(
-        "http://localhost:8000/api/inventory",
+        "https://inventory-saas-system.onrender.com/api/inventory",
         formData,
         {
           headers: {
