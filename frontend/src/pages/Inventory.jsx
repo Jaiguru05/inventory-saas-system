@@ -338,15 +338,11 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
 import Layout from "../layouts/Layout";
-const [products, setProducts] = useState([]);
-const [warehouses, setWarehouses] = useState([]);
 
 const Inventory = () => {
 
   const [products, setProducts] = useState([]);
-
-  const [warehouses, setWarehouses] =
-    useState([]);
+  const [warehouses, setWarehouses] = useState([]);
 
   const [inventoryLogs, setInventoryLogs] =
     useState([]);
