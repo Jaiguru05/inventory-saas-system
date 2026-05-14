@@ -60,6 +60,10 @@ app.use(
   userRoutes
 );
 
+app.get("/", (req, res) => {
+  res.send("Inventory SaaS Backend Running");
+});
+
 
 // MONGODB
 mongoose.connect(
