@@ -2543,5 +2543,4 @@ const Dashboard = () => {
     </DashboardLayout>
   );
 };
-
 export default Dashboard;
