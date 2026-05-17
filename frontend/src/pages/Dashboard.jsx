@@ -1552,10 +1552,842 @@
 // export default Dashboard;
 
 
-import {
+// import {
+//   useEffect,
+//   useState,
+//   useMemo,
+// } from "react";
+
+// import axios from "axios";
+
+// import DashboardLayout from "../layouts/DashboardLayout";
+
+// import {
+//   ResponsiveContainer,
+//   BarChart,
+//   Bar,
+//   XAxis,
+//   YAxis,
+//   Tooltip,
+//   CartesianGrid,
+//   PieChart,
+//   Pie,
+//   Cell,
+//   Legend,
+//   LineChart,
+//   Line,
+// } from "recharts";
+
+// const Dashboard = () => {
+
+//   const [stats, setStats] =
+//     useState({
+//       warehouses: 0,
+//       products: 0,
+//       transfers: 0,
+//       inventoryLogs: 0,
+//     });
+
+//   const [warehouses, setWarehouses] =
+//     useState([]);
+
+//   const [products, setProducts] =
+//     useState([]);
+
+//   const [transfers, setTransfers] =
+//     useState([]);
+
+//   const [inventoryLogs, setInventoryLogs] =
+//     useState([]);
+
+//   const [
+//     selectedWarehouse,
+//     setSelectedWarehouse,
+//   ] = useState("");
+
+//   const token =
+//     localStorage.getItem("token");
+
+//   /* ================================= */
+//   /* FETCH DASHBOARD */
+//   /* ================================= */
+
+//   useEffect(() => {
+//     fetchDashboard();
+//   }, []);
+
+//   const fetchDashboard =
+//     async () => {
+
+//       try {
+
+//         const headers = {
+//           Authorization:
+//             `Bearer ${token}`,
+//         };
+
+//         const [
+//           warehouseRes,
+//           productRes,
+//           transferRes,
+//           inventoryRes,
+//         ] = await Promise.all([
+
+//           axios.get(
+//             "https://inventory-saas-system.onrender.com/api/warehouses",
+//             { headers }
+//           ),
+
+//           axios.get(
+//             "https://inventory-saas-system.onrender.com/api/products",
+//             { headers }
+//           ),
+
+//           axios.get(
+//             "https://inventory-saas-system.onrender.com/api/transfers",
+//             { headers }
+//           ),
+
+//           axios.get(
+//             "https://inventory-saas-system.onrender.com/api/inventory",
+//             { headers }
+//           ),
+
+//         ]);
+
+//         setWarehouses(
+//           warehouseRes.data || []
+//         );
+
+//         setProducts(
+//           productRes.data || []
+//         );
+
+//         setTransfers(
+//           transferRes.data || []
+//         );
+
+//         setInventoryLogs(
+//           inventoryRes.data || []
+//         );
+
+//         setStats({
+//           warehouses:
+//             warehouseRes.data.length,
+
+//           products:
+//             productRes.data.length,
+
+//           transfers:
+//             transferRes.data.length,
+
+//           inventoryLogs:
+//             inventoryRes.data.length,
+//         });
+
+//         if (
+//           warehouseRes.data.length > 0
+//         ) {
+//           setSelectedWarehouse(
+//             warehouseRes.data[0]._id
+//           );
+//         }
+
+//       } catch (err) {
+
+//         console.log(err);
+
+//       }
+//     };
+
+//   /* ================================= */
+//   /* FILTER PRODUCTS */
+//   /* ================================= */
+
+//   const filteredProducts =
+//     useMemo(() => {
+
+//       return products.filter(
+//         (product) =>
+//           product.warehouseId?._id ===
+//           selectedWarehouse
+//       );
+
+//     }, [
+//       products,
+//       selectedWarehouse,
+//     ]);
+
+//   /* ================================= */
+//   /* FILTER TRANSFERS */
+//   /* ================================= */
+
+//   const filteredTransfers =
+//     useMemo(() => {
+
+//       return transfers.filter(
+//         (transfer) =>
+
+//           transfer.fromWarehouse?._id ===
+//             selectedWarehouse ||
+
+//           transfer.toWarehouse?._id ===
+//             selectedWarehouse
+//       );
+
+//     }, [
+//       transfers,
+//       selectedWarehouse,
+//     ]);
+
+//   /* ================================= */
+//   /* FILTER LOGS */
+//   /* ================================= */
+
+//   const filteredLogs =
+//     useMemo(() => {
+
+//       return inventoryLogs.filter(
+//         (log) =>
+//           log.warehouseId?._id ===
+//           selectedWarehouse
+//       );
+
+//     }, [
+//       inventoryLogs,
+//       selectedWarehouse,
+//     ]);
+
+//   /* ================================= */
+//   /* ANALYTICS */
+//   /* ================================= */
+
+//   const totalProducts =
+//     filteredProducts.length;
+
+//   const totalStock =
+//     filteredProducts.reduce(
+//       (acc, item) =>
+//         acc + (item.quantity || 0),
+//       0
+//     );
+
+//   const stockIn =
+//     filteredLogs
+//       .filter(
+//         (log) =>
+//           log.type === "IN"
+//       )
+//       .reduce(
+//         (acc, log) =>
+//           acc + (log.quantity || 0),
+//         0
+//       );
+
+//   const stockOut =
+//     filteredLogs
+//       .filter(
+//         (log) =>
+//           log.type === "OUT"
+//       )
+//       .reduce(
+//         (acc, log) =>
+//           acc + (log.quantity || 0),
+//         0
+//       );
+
+//   const analyticsData = [
+
+//     {
+//       name: "Products",
+//       value: totalProducts,
+//     },
+
+//     {
+//       name: "Stock In",
+//       value: stockIn,
+//     },
+
+//     {
+//       name: "Stock Out",
+//       value: stockOut,
+//     },
+
+//     {
+//       name: "Transfers",
+//       value:
+//         filteredTransfers.length,
+//     },
+
+//   ];
+
+//   const stockTrendData =
+//     filteredProducts.map(
+//       (product) => ({
+//         name: product.name,
+//         stock:
+//           product.quantity || 0,
+//       })
+//     );
+
+//   return (
+
+//     <DashboardLayout>
+
+//       <div className="space-y-6">
+
+//         {/* HEADER */}
+
+//         <div>
+
+//           <h1 className="
+//             text-4xl
+//             font-bold
+//             text-gray-900
+//           ">
+//             Dashboard
+//           </h1>
+
+//           <p className="
+//             text-gray-500
+//             mt-1
+//             text-lg
+//           ">
+//             Inventory system overview
+//           </p>
+
+//         </div>
+
+//         {/* SUMMARY */}
+
+//         <div className="
+//           grid
+//           grid-cols-1
+//           sm:grid-cols-2
+//           xl:grid-cols-4
+//           gap-5
+//         ">
+
+//           <SummaryCard
+//             title="Warehouses"
+//             value={stats.warehouses}
+//             icon="🏢"
+//             color="bg-indigo-100"
+//           />
+
+//           <SummaryCard
+//             title="Products"
+//             value={stats.products}
+//             icon="📦"
+//             color="bg-green-100"
+//           />
+
+//           <SummaryCard
+//             title="Transfers"
+//             value={stats.transfers}
+//             icon="🔄"
+//             color="bg-yellow-100"
+//           />
+
+//           <SummaryCard
+//             title="Inventory Logs"
+//             value={stats.inventoryLogs}
+//             icon="📋"
+//             color="bg-red-100"
+//           />
+
+//         </div>
+
+//         {/* WAREHOUSE ANALYTICS */}
+
+//         <div className="
+//           bg-white
+//           rounded-3xl
+//           p-7
+//           shadow-sm
+//           border
+//           border-gray-100
+//         ">
+
+//           <div className="
+//             flex
+//             flex-col
+//             xl:flex-row
+//             justify-between
+//             xl:items-center
+//             gap-6
+//             mb-8
+//           ">
+
+//             <div>
+
+//               <h2 className="
+//                 text-4xl
+//                 font-bold
+//               ">
+//                 Warehouse Analytics
+//               </h2>
+
+//               <p className="
+//                 text-gray-500
+//                 mt-2
+//                 text-lg
+//               ">
+//                 Real-time warehouse insights
+//               </p>
+
+//             </div>
+
+//             <select
+
+//               value={
+//                 selectedWarehouse
+//               }
+
+//               onChange={(e) =>
+//                 setSelectedWarehouse(
+//                   e.target.value
+//                 )
+//               }
+
+//               className="
+//                 border-2
+//                 border-gray-200
+//                 rounded-2xl
+//                 px-5
+//                 py-4
+//                 w-full
+//                 xl:w-96
+//                 text-lg
+//                 outline-none
+//                 focus:border-indigo-500
+//               "
+//             >
+
+//               {warehouses.map(
+//                 (warehouse) => (
+
+//                 <option
+//                   key={
+//                     warehouse._id
+//                   }
+
+//                   value={
+//                     warehouse._id
+//                   }
+//                 >
+//                   {warehouse.name}
+//                 </option>
+
+//               ))}
+
+//             </select>
+
+//           </div>
+
+//           {/* ANALYTIC CARDS */}
+
+//           <div className="
+//             grid
+//             grid-cols-1
+//             md:grid-cols-2
+//             xl:grid-cols-4
+//             gap-5
+//             mb-8
+//           ">
+
+//             <AnalyticsCard
+//               title="Products"
+//               value={totalProducts}
+//               color="text-green-600"
+//               bg="bg-green-50"
+//             />
+
+//             <AnalyticsCard
+//               title="Total Stock"
+//               value={totalStock}
+//               color="text-indigo-600"
+//               bg="bg-indigo-50"
+//             />
+
+//             <AnalyticsCard
+//               title="Stock IN"
+//               value={stockIn}
+//               color="text-blue-600"
+//               bg="bg-blue-50"
+//             />
+
+//             <AnalyticsCard
+//               title="Stock OUT"
+//               value={stockOut}
+//               color="text-red-600"
+//               bg="bg-red-50"
+//             />
+
+//           </div>
+
+//           {/* CHARTS */}
+
+//           <div className="
+//             grid
+//             grid-cols-1
+//             xl:grid-cols-2
+//             gap-6
+//           ">
+
+//             {/* BAR */}
+
+//             <ChartCard
+//               title="Warehouse Operations"
+//             >
+
+//               <ResponsiveContainer
+//                 width="100%"
+//                 height={320}
+//               >
+
+//                 <BarChart
+//                   data={analyticsData}
+//                 >
+
+//                   <CartesianGrid
+//                     strokeDasharray="3 3"
+//                   />
+
+//                   <XAxis
+//                     dataKey="name"
+//                   />
+
+//                   <YAxis />
+
+//                   <Tooltip />
+
+//                   <Bar
+//                     dataKey="value"
+//                     radius={[
+//                       10,
+//                       10,
+//                       0,
+//                       0,
+//                     ]}
+//                   >
+
+//                     <Cell fill="#22C55E" />
+//                     <Cell fill="#4F46E5" />
+//                     <Cell fill="#3B82F6" />
+//                     <Cell fill="#EF4444" />
+
+//                   </Bar>
+
+//                 </BarChart>
+
+//               </ResponsiveContainer>
+
+//             </ChartCard>
+
+//             {/* PIE */}
+
+//             <ChartCard
+//               title="Inventory Flow"
+//             >
+
+//               <ResponsiveContainer
+//                 width="100%"
+//                 height={320}
+//               >
+
+//                 <PieChart>
+
+//                   <Pie
+//                     data={analyticsData}
+//                     dataKey="value"
+//                     outerRadius={120}
+//                     label
+//                   >
+
+//                     <Cell fill="#22C55E" />
+//                     <Cell fill="#4F46E5" />
+//                     <Cell fill="#3B82F6" />
+//                     <Cell fill="#EF4444" />
+
+//                   </Pie>
+
+//                   <Tooltip />
+
+//                   <Legend />
+
+//                 </PieChart>
+
+//               </ResponsiveContainer>
+
+//             </ChartCard>
+
+//           </div>
+
+//           {/* PRODUCT TREND */}
+
+//           <div className="
+//             bg-gray-50
+//             rounded-3xl
+//             p-6
+//             mt-6
+//           ">
+
+//             <h3 className="
+//               text-3xl
+//               font-bold
+//               mb-5
+//             ">
+//               Product Stock Trend
+//             </h3>
+
+//             <ResponsiveContainer
+//               width="100%"
+//               height={320}
+//             >
+
+//               <LineChart
+//                 data={stockTrendData}
+//               >
+
+//                 <CartesianGrid
+//                   strokeDasharray="3 3"
+//                 />
+
+//                 <XAxis
+//                   dataKey="name"
+//                 />
+
+//                 <YAxis />
+
+//                 <Tooltip />
+
+//                 <Line
+//                   type="monotone"
+//                   dataKey="stock"
+//                   stroke="#4F46E5"
+//                   strokeWidth={4}
+//                 />
+
+//               </LineChart>
+
+//             </ResponsiveContainer>
+
+//           </div>
+
+//           {/* RECENT ACTIVITY */}
+
+//           <div className="
+//             bg-gray-50
+//             rounded-3xl
+//             p-6
+//             mt-6
+//           ">
+
+//             <h3 className="
+//               text-3xl
+//               font-bold
+//               mb-5
+//             ">
+//               Recent Activity
+//             </h3>
+
+//             <div className="
+//               space-y-4
+//             ">
+
+//               {filteredLogs
+//                 .slice(0, 5)
+//                 .map((log, index) => (
+
+//                 <div
+//                   key={index}
+
+//                   className="
+//                     bg-white
+//                     rounded-2xl
+//                     p-5
+//                     flex
+//                     justify-between
+//                     items-center
+//                   "
+//                 >
+
+//                   <div>
+
+//                     <h4 className="
+//                       font-semibold
+//                       text-lg
+//                     ">
+//                       {
+//                         log.productName ||
+//                         log.productId?.name
+//                       }
+//                     </h4>
+
+//                     <p className="
+//                       text-gray-500
+//                     ">
+//                       {log.type}
+//                     </p>
+
+//                   </div>
+
+//                   <div className="
+//                     font-bold
+//                     text-xl
+//                   ">
+//                     {log.quantity}
+//                   </div>
+
+//                 </div>
+
+//               ))}
+
+//             </div>
+
+//           </div>
+
+//         </div>
+
+//       </div>
+
+//     </DashboardLayout>
+//   );
+// };
+
+// /* ================================= */
+// /* SUMMARY CARD */
+// /* ================================= */
+
+// const SummaryCard = ({
+//   title,
+//   value,
+//   icon,
+//   color,
+// }) => (
+
+//   <div className="
+//     bg-white
+//     rounded-3xl
+//     p-6
+//     shadow-sm
+//     border
+//     border-gray-100
+//     flex
+//     items-center
+//     justify-between
+//   ">
+
+//     <div>
+
+//       <p className="
+//         text-gray-500
+//         text-lg
+//       ">
+//         {title}
+//       </p>
+
+//       <h2 className="
+//         text-5xl
+//         font-bold
+//         mt-2
+//       ">
+//         {value}
+//       </h2>
+
+//     </div>
+
+//     <div className={`
+//       w-20
+//       h-20
+//       rounded-3xl
+//       ${color}
+//       flex
+//       items-center
+//       justify-center
+//       text-4xl
+//     `}>
+//       {icon}
+//     </div>
+
+//   </div>
+// );
+
+// /* ================================= */
+// /* ANALYTICS CARD */
+// /* ================================= */
+
+// const AnalyticsCard = ({
+//   title,
+//   value,
+//   color,
+//   bg,
+// }) => (
+
+//   <div className={`
+//     ${bg}
+//     rounded-3xl
+//     p-6
+//   `}>
+
+//     <p className="
+//       text-gray-600
+//       text-lg
+//     ">
+//       {title}
+//     </p>
+
+//     <h3 className={`
+//       text-5xl
+//       font-bold
+//       mt-3
+//       ${color}
+//     `}>
+//       {value}
+//     </h3>
+
+//   </div>
+// );
+
+// /* ================================= */
+// /* CHART CARD */
+// /* ================================= */
+
+// const ChartCard = ({
+//   title,
+//   children,
+// }) => (
+
+//   <div className="
+//     bg-gray-50
+//     rounded-3xl
+//     p-6
+//   ">
+
+//     <h3 className="
+//       text-3xl
+//       font-bold
+//       mb-5
+//     ">
+//       {title}
+//     </h3>
+
+//     {children}
+
+//   </div>
+// );
+
+// export default Dashboard;
+
+
+
+
+import React, {
   useEffect,
   useState,
   useMemo,
+  useCallback,
 } from "react";
 
 import axios from "axios";
@@ -1577,6 +2409,9 @@ import {
   LineChart,
   Line,
 } from "recharts";
+
+const API =
+  "https://inventory-saas-system.onrender.com";
 
 const Dashboard = () => {
 
@@ -1612,12 +2447,8 @@ const Dashboard = () => {
   /* FETCH DASHBOARD */
   /* ================================= */
 
-  useEffect(() => {
-    fetchDashboard();
-  }, []);
-
   const fetchDashboard =
-    async () => {
+    useCallback(async () => {
 
       try {
 
@@ -1634,22 +2465,22 @@ const Dashboard = () => {
         ] = await Promise.all([
 
           axios.get(
-            "https://inventory-saas-system.onrender.com/api/warehouses",
+            `${API}/api/warehouses`,
             { headers }
           ),
 
           axios.get(
-            "https://inventory-saas-system.onrender.com/api/products",
+            `${API}/api/products`,
             { headers }
           ),
 
           axios.get(
-            "https://inventory-saas-system.onrender.com/api/transfers",
+            `${API}/api/transfers`,
             { headers }
           ),
 
           axios.get(
-            "https://inventory-saas-system.onrender.com/api/inventory",
+            `${API}/api/inventory`,
             { headers }
           ),
 
@@ -1688,17 +2519,29 @@ const Dashboard = () => {
         if (
           warehouseRes.data.length > 0
         ) {
+
           setSelectedWarehouse(
             warehouseRes.data[0]._id
           );
+
         }
 
       } catch (err) {
 
-        console.log(err);
+        console.log(
+          "Dashboard Error",
+          err
+        );
 
       }
-    };
+
+    }, [token]);
+
+  useEffect(() => {
+
+    fetchDashboard();
+
+  }, [fetchDashboard]);
 
   /* ================================= */
   /* FILTER PRODUCTS */
@@ -1748,9 +2591,26 @@ const Dashboard = () => {
     useMemo(() => {
 
       return inventoryLogs.filter(
-        (log) =>
-          log.warehouseId?._id ===
-          selectedWarehouse
+        (log) => {
+
+          if (
+            typeof log.warehouseId ===
+            "object"
+          ) {
+
+            return (
+              log.warehouseId?._id ===
+              selectedWarehouse
+            );
+
+          }
+
+          return (
+            log.warehouseId ===
+            selectedWarehouse
+          );
+
+        }
       );
 
     }, [
@@ -1836,8 +2696,6 @@ const Dashboard = () => {
 
       <div className="space-y-6">
 
-        {/* HEADER */}
-
         <div>
 
           <h1 className="
@@ -1857,8 +2715,6 @@ const Dashboard = () => {
           </p>
 
         </div>
-
-        {/* SUMMARY */}
 
         <div className="
           grid
@@ -1897,8 +2753,6 @@ const Dashboard = () => {
           />
 
         </div>
-
-        {/* WAREHOUSE ANALYTICS */}
 
         <div className="
           bg-white
@@ -1985,8 +2839,6 @@ const Dashboard = () => {
 
           </div>
 
-          {/* ANALYTIC CARDS */}
-
           <div className="
             grid
             grid-cols-1
@@ -2026,228 +2878,6 @@ const Dashboard = () => {
 
           </div>
 
-          {/* CHARTS */}
-
-          <div className="
-            grid
-            grid-cols-1
-            xl:grid-cols-2
-            gap-6
-          ">
-
-            {/* BAR */}
-
-            <ChartCard
-              title="Warehouse Operations"
-            >
-
-              <ResponsiveContainer
-                width="100%"
-                height={320}
-              >
-
-                <BarChart
-                  data={analyticsData}
-                >
-
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                  />
-
-                  <XAxis
-                    dataKey="name"
-                  />
-
-                  <YAxis />
-
-                  <Tooltip />
-
-                  <Bar
-                    dataKey="value"
-                    radius={[
-                      10,
-                      10,
-                      0,
-                      0,
-                    ]}
-                  >
-
-                    <Cell fill="#22C55E" />
-                    <Cell fill="#4F46E5" />
-                    <Cell fill="#3B82F6" />
-                    <Cell fill="#EF4444" />
-
-                  </Bar>
-
-                </BarChart>
-
-              </ResponsiveContainer>
-
-            </ChartCard>
-
-            {/* PIE */}
-
-            <ChartCard
-              title="Inventory Flow"
-            >
-
-              <ResponsiveContainer
-                width="100%"
-                height={320}
-              >
-
-                <PieChart>
-
-                  <Pie
-                    data={analyticsData}
-                    dataKey="value"
-                    outerRadius={120}
-                    label
-                  >
-
-                    <Cell fill="#22C55E" />
-                    <Cell fill="#4F46E5" />
-                    <Cell fill="#3B82F6" />
-                    <Cell fill="#EF4444" />
-
-                  </Pie>
-
-                  <Tooltip />
-
-                  <Legend />
-
-                </PieChart>
-
-              </ResponsiveContainer>
-
-            </ChartCard>
-
-          </div>
-
-          {/* PRODUCT TREND */}
-
-          <div className="
-            bg-gray-50
-            rounded-3xl
-            p-6
-            mt-6
-          ">
-
-            <h3 className="
-              text-3xl
-              font-bold
-              mb-5
-            ">
-              Product Stock Trend
-            </h3>
-
-            <ResponsiveContainer
-              width="100%"
-              height={320}
-            >
-
-              <LineChart
-                data={stockTrendData}
-              >
-
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                />
-
-                <XAxis
-                  dataKey="name"
-                />
-
-                <YAxis />
-
-                <Tooltip />
-
-                <Line
-                  type="monotone"
-                  dataKey="stock"
-                  stroke="#4F46E5"
-                  strokeWidth={4}
-                />
-
-              </LineChart>
-
-            </ResponsiveContainer>
-
-          </div>
-
-          {/* RECENT ACTIVITY */}
-
-          <div className="
-            bg-gray-50
-            rounded-3xl
-            p-6
-            mt-6
-          ">
-
-            <h3 className="
-              text-3xl
-              font-bold
-              mb-5
-            ">
-              Recent Activity
-            </h3>
-
-            <div className="
-              space-y-4
-            ">
-
-              {filteredLogs
-                .slice(0, 5)
-                .map((log, index) => (
-
-                <div
-                  key={index}
-
-                  className="
-                    bg-white
-                    rounded-2xl
-                    p-5
-                    flex
-                    justify-between
-                    items-center
-                  "
-                >
-
-                  <div>
-
-                    <h4 className="
-                      font-semibold
-                      text-lg
-                    ">
-                      {
-                        log.productName ||
-                        log.productId?.name
-                      }
-                    </h4>
-
-                    <p className="
-                      text-gray-500
-                    ">
-                      {log.type}
-                    </p>
-
-                  </div>
-
-                  <div className="
-                    font-bold
-                    text-xl
-                  ">
-                    {log.quantity}
-                  </div>
-
-                </div>
-
-              ))}
-
-            </div>
-
-          </div>
-
         </div>
 
       </div>
@@ -2255,10 +2885,6 @@ const Dashboard = () => {
     </DashboardLayout>
   );
 };
-
-/* ================================= */
-/* SUMMARY CARD */
-/* ================================= */
 
 const SummaryCard = ({
   title,
@@ -2314,10 +2940,6 @@ const SummaryCard = ({
   </div>
 );
 
-/* ================================= */
-/* ANALYTICS CARD */
-/* ================================= */
-
 const AnalyticsCard = ({
   title,
   value,
@@ -2346,34 +2968,6 @@ const AnalyticsCard = ({
     `}>
       {value}
     </h3>
-
-  </div>
-);
-
-/* ================================= */
-/* CHART CARD */
-/* ================================= */
-
-const ChartCard = ({
-  title,
-  children,
-}) => (
-
-  <div className="
-    bg-gray-50
-    rounded-3xl
-    p-6
-  ">
-
-    <h3 className="
-      text-3xl
-      font-bold
-      mb-5
-    ">
-      {title}
-    </h3>
-
-    {children}
 
   </div>
 );
