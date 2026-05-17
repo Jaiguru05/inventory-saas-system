@@ -1552,6 +1552,8 @@
 // export default Dashboard;
 
 
+
+
 // import {
 //   useEffect,
 //   useState,
@@ -2383,7 +2385,7 @@
 
 
 
-import React, {
+import {
   useEffect,
   useState,
   useMemo,
@@ -2410,18 +2412,14 @@ import {
   Line,
 } from "recharts";
 
-const API =
-  "https://inventory-saas-system.onrender.com";
-
 const Dashboard = () => {
 
-  const [stats, setStats] =
-    useState({
-      warehouses: 0,
-      products: 0,
-      transfers: 0,
-      inventoryLogs: 0,
-    });
+  const [stats, setStats] = useState({
+    warehouses: 0,
+    products: 0,
+    transfers: 0,
+    inventoryLogs: 0,
+  });
 
   const [warehouses, setWarehouses] =
     useState([]);
@@ -2465,22 +2463,22 @@ const Dashboard = () => {
         ] = await Promise.all([
 
           axios.get(
-            `${API}/api/warehouses`,
+            "https://inventory-saas-system.onrender.com/api/warehouses",
             { headers }
           ),
 
           axios.get(
-            `${API}/api/products`,
+            "https://inventory-saas-system.onrender.com/api/products",
             { headers }
           ),
 
           axios.get(
-            `${API}/api/transfers`,
+            "https://inventory-saas-system.onrender.com/api/transfers",
             { headers }
           ),
 
           axios.get(
-            `${API}/api/inventory`,
+            "https://inventory-saas-system.onrender.com/api/inventory",
             { headers }
           ),
 
@@ -2528,10 +2526,7 @@ const Dashboard = () => {
 
       } catch (err) {
 
-        console.log(
-          "Dashboard Error",
-          err
-        );
+        console.log(err);
 
       }
 
@@ -2602,14 +2597,12 @@ const Dashboard = () => {
               log.warehouseId?._id ===
               selectedWarehouse
             );
-
           }
 
           return (
             log.warehouseId ===
             selectedWarehouse
           );
-
         }
       );
 
@@ -2690,17 +2683,26 @@ const Dashboard = () => {
       })
     );
 
+  const COLORS = [
+    "#22C55E",
+    "#4F46E5",
+    "#3B82F6",
+    "#EF4444",
+  ];
+
   return (
 
     <DashboardLayout>
 
-      <div className="space-y-6">
+      <div className="space-y-8">
+
+        {/* HEADER */}
 
         <div>
 
           <h1 className="
-            text-4xl
-            font-bold
+            text-5xl
+            font-black
             text-gray-900
           ">
             Dashboard
@@ -2708,20 +2710,22 @@ const Dashboard = () => {
 
           <p className="
             text-gray-500
-            mt-1
-            text-lg
+            text-xl
+            mt-2
           ">
             Inventory system overview
           </p>
 
         </div>
 
+        {/* SUMMARY */}
+
         <div className="
           grid
           grid-cols-1
-          sm:grid-cols-2
+          md:grid-cols-2
           xl:grid-cols-4
-          gap-5
+          gap-6
         ">
 
           <SummaryCard
@@ -2754,10 +2758,12 @@ const Dashboard = () => {
 
         </div>
 
+        {/* ANALYTICS */}
+
         <div className="
           bg-white
-          rounded-3xl
-          p-7
+          rounded-[35px]
+          p-8
           shadow-sm
           border
           border-gray-100
@@ -2768,24 +2774,23 @@ const Dashboard = () => {
             flex-col
             xl:flex-row
             justify-between
-            xl:items-center
             gap-6
-            mb-8
+            mb-10
           ">
 
             <div>
 
               <h2 className="
-                text-4xl
-                font-bold
+                text-5xl
+                font-black
               ">
                 Warehouse Analytics
               </h2>
 
               <p className="
                 text-gray-500
+                text-xl
                 mt-2
-                text-lg
               ">
                 Real-time warehouse insights
               </p>
@@ -2794,9 +2799,7 @@ const Dashboard = () => {
 
             <select
 
-              value={
-                selectedWarehouse
-              }
+              value={selectedWarehouse}
 
               onChange={(e) =>
                 setSelectedWarehouse(
@@ -2805,14 +2808,14 @@ const Dashboard = () => {
               }
 
               className="
+                w-full
+                xl:w-[400px]
                 border-2
                 border-gray-200
-                rounded-2xl
-                px-5
-                py-4
-                w-full
-                xl:w-96
-                text-lg
+                rounded-3xl
+                px-6
+                py-5
+                text-xl
                 outline-none
                 focus:border-indigo-500
               "
@@ -2822,13 +2825,8 @@ const Dashboard = () => {
                 (warehouse) => (
 
                 <option
-                  key={
-                    warehouse._id
-                  }
-
-                  value={
-                    warehouse._id
-                  }
+                  key={warehouse._id}
+                  value={warehouse._id}
                 >
                   {warehouse.name}
                 </option>
@@ -2839,12 +2837,14 @@ const Dashboard = () => {
 
           </div>
 
+          {/* ANALYTICS CARDS */}
+
           <div className="
             grid
             grid-cols-1
             md:grid-cols-2
             xl:grid-cols-4
-            gap-5
+            gap-6
             mb-8
           ">
 
@@ -2878,6 +2878,235 @@ const Dashboard = () => {
 
           </div>
 
+          {/* CHARTS */}
+
+          <div className="
+            grid
+            grid-cols-1
+            xl:grid-cols-2
+            gap-6
+          ">
+
+            {/* BAR CHART */}
+
+            <ChartCard
+              title="Warehouse Operations"
+            >
+
+              <ResponsiveContainer
+                width="100%"
+                height={320}
+              >
+
+                <BarChart
+                  data={analyticsData}
+                >
+
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                  />
+
+                  <XAxis dataKey="name" />
+
+                  <YAxis />
+
+                  <Tooltip />
+
+                  <Bar
+                    dataKey="value"
+                    radius={[10, 10, 0, 0]}
+                  >
+
+                    {analyticsData.map(
+                      (entry, index) => (
+
+                      <Cell
+                        key={index}
+                        fill={
+                          COLORS[index %
+                          COLORS.length]
+                        }
+                      />
+
+                    ))}
+
+                  </Bar>
+
+                </BarChart>
+
+              </ResponsiveContainer>
+
+            </ChartCard>
+
+            {/* PIE CHART */}
+
+            <ChartCard
+              title="Inventory Flow"
+            >
+
+              <ResponsiveContainer
+                width="100%"
+                height={320}
+              >
+
+                <PieChart>
+
+                  <Pie
+                    data={analyticsData}
+                    dataKey="value"
+                    outerRadius={120}
+                    label
+                  >
+
+                    {analyticsData.map(
+                      (entry, index) => (
+
+                      <Cell
+                        key={index}
+                        fill={
+                          COLORS[index %
+                          COLORS.length]
+                        }
+                      />
+
+                    ))}
+
+                  </Pie>
+
+                  <Tooltip />
+
+                  <Legend />
+
+                </PieChart>
+
+              </ResponsiveContainer>
+
+            </ChartCard>
+
+          </div>
+
+          {/* PRODUCT TREND */}
+
+          <div className="
+            bg-gray-50
+            rounded-3xl
+            p-6
+            mt-6
+          ">
+
+            <h3 className="
+              text-3xl
+              font-bold
+              mb-5
+            ">
+              Product Stock Trend
+            </h3>
+
+            <ResponsiveContainer
+              width="100%"
+              height={320}
+            >
+
+              <LineChart
+                data={stockTrendData}
+              >
+
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                />
+
+                <XAxis dataKey="name" />
+
+                <YAxis />
+
+                <Tooltip />
+
+                <Line
+                  type="monotone"
+                  dataKey="stock"
+                  stroke="#4F46E5"
+                  strokeWidth={4}
+                />
+
+              </LineChart>
+
+            </ResponsiveContainer>
+
+          </div>
+
+          {/* RECENT ACTIVITY */}
+
+          <div className="
+            bg-gray-50
+            rounded-3xl
+            p-6
+            mt-6
+          ">
+
+            <h3 className="
+              text-3xl
+              font-bold
+              mb-5
+            ">
+              Recent Activity
+            </h3>
+
+            <div className="
+              space-y-4
+            ">
+
+              {filteredLogs
+                .slice(0, 5)
+                .map((log, index) => (
+
+                <div
+                  key={index}
+
+                  className="
+                    bg-white
+                    rounded-2xl
+                    p-5
+                    flex
+                    justify-between
+                    items-center
+                  "
+                >
+
+                  <div>
+
+                    <h4 className="
+                      font-semibold
+                      text-lg
+                    ">
+                      {
+                        log.productName ||
+                        log.productId?.name
+                      }
+                    </h4>
+
+                    <p className="
+                      text-gray-500
+                    ">
+                      {log.type}
+                    </p>
+
+                  </div>
+
+                  <div className="
+                    font-bold
+                    text-xl
+                  ">
+                    {log.quantity}
+                  </div>
+
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
         </div>
 
       </div>
@@ -2885,6 +3114,8 @@ const Dashboard = () => {
     </DashboardLayout>
   );
 };
+
+/* SUMMARY CARD */
 
 const SummaryCard = ({
   title,
@@ -2940,6 +3171,8 @@ const SummaryCard = ({
   </div>
 );
 
+/* ANALYTICS CARD */
+
 const AnalyticsCard = ({
   title,
   value,
@@ -2968,6 +3201,32 @@ const AnalyticsCard = ({
     `}>
       {value}
     </h3>
+
+  </div>
+);
+
+/* CHART CARD */
+
+const ChartCard = ({
+  title,
+  children,
+}) => (
+
+  <div className="
+    bg-gray-50
+    rounded-3xl
+    p-6
+  ">
+
+    <h3 className="
+      text-3xl
+      font-bold
+      mb-5
+    ">
+      {title}
+    </h3>
+
+    {children}
 
   </div>
 );
