@@ -1551,6 +1551,7 @@
 
 // export default Dashboard;
 
+
 import {
   useEffect,
   useState,
@@ -1578,6 +1579,7 @@ import {
 } from "recharts";
 
 const Dashboard = () => {
+
   const [stats, setStats] =
     useState({
       warehouses: 0,
@@ -1606,15 +1608,22 @@ const Dashboard = () => {
   const token =
     localStorage.getItem("token");
 
+  /* ================================= */
+  /* FETCH DASHBOARD */
+  /* ================================= */
+
   useEffect(() => {
     fetchDashboard();
   }, []);
 
   const fetchDashboard =
     async () => {
+
       try {
+
         const headers = {
-          Authorization: `Bearer ${token}`,
+          Authorization:
+            `Bearer ${token}`,
         };
 
         const [
@@ -1623,6 +1632,7 @@ const Dashboard = () => {
           transferRes,
           inventoryRes,
         ] = await Promise.all([
+
           axios.get(
             "https://inventory-saas-system.onrender.com/api/warehouses",
             { headers }
@@ -1642,6 +1652,7 @@ const Dashboard = () => {
             "https://inventory-saas-system.onrender.com/api/inventory",
             { headers }
           ),
+
         ]);
 
         setWarehouses(
@@ -1678,61 +1689,70 @@ const Dashboard = () => {
           warehouseRes.data.length > 0
         ) {
           setSelectedWarehouse(
-            warehouseRes.data[0].name
+            warehouseRes.data[0]._id
           );
         }
+
       } catch (err) {
+
         console.log(err);
+
       }
     };
 
   /* ================================= */
-  /* FILTERED DATA */
+  /* FILTER PRODUCTS */
   /* ================================= */
 
   const filteredProducts =
     useMemo(() => {
+
       return products.filter(
         (product) =>
-          product.warehouse ===
-            selectedWarehouse ||
-          product.warehouse?.name ===
-            selectedWarehouse
+          product.warehouseId?._id ===
+          selectedWarehouse
       );
+
     }, [
       products,
       selectedWarehouse,
     ]);
 
+  /* ================================= */
+  /* FILTER TRANSFERS */
+  /* ================================= */
+
   const filteredTransfers =
     useMemo(() => {
+
       return transfers.filter(
         (transfer) =>
-          transfer.fromWarehouse ===
+
+          transfer.fromWarehouse?._id ===
             selectedWarehouse ||
-          transfer.toWarehouse ===
-            selectedWarehouse ||
-          transfer
-            .fromWarehouse?.name ===
-            selectedWarehouse ||
-          transfer.toWarehouse
-            ?.name ===
+
+          transfer.toWarehouse?._id ===
             selectedWarehouse
       );
+
     }, [
       transfers,
       selectedWarehouse,
     ]);
 
+  /* ================================= */
+  /* FILTER LOGS */
+  /* ================================= */
+
   const filteredLogs =
     useMemo(() => {
+
       return inventoryLogs.filter(
         (log) =>
-          log.warehouse ===
-            selectedWarehouse ||
-          log.warehouse?.name ===
-            selectedWarehouse
+          log.warehouseId?._id ===
+          selectedWarehouse
       );
+
     }, [
       inventoryLogs,
       selectedWarehouse,
@@ -1777,6 +1797,7 @@ const Dashboard = () => {
       );
 
   const analyticsData = [
+
     {
       name: "Products",
       value: totalProducts,
@@ -1797,6 +1818,7 @@ const Dashboard = () => {
       value:
         filteredTransfers.length,
     },
+
   ];
 
   const stockTrendData =
@@ -1809,12 +1831,12 @@ const Dashboard = () => {
     );
 
   return (
+
     <DashboardLayout>
+
       <div className="space-y-6">
 
-        {/* ================================= */}
         {/* HEADER */}
-        {/* ================================= */}
 
         <div>
 
@@ -1836,9 +1858,7 @@ const Dashboard = () => {
 
         </div>
 
-        {/* ================================= */}
-        {/* SUMMARY CARDS */}
-        {/* ================================= */}
+        {/* SUMMARY */}
 
         <div className="
           grid
@@ -1848,206 +1868,37 @@ const Dashboard = () => {
           gap-5
         ">
 
-          {/* Warehouses */}
+          <SummaryCard
+            title="Warehouses"
+            value={stats.warehouses}
+            icon="🏢"
+            color="bg-indigo-100"
+          />
 
-          <div className="
-            bg-white
-            rounded-3xl
-            p-6
-            shadow-sm
-            border
-            border-gray-100
-            flex
-            items-center
-            justify-between
-          ">
+          <SummaryCard
+            title="Products"
+            value={stats.products}
+            icon="📦"
+            color="bg-green-100"
+          />
 
-            <div>
+          <SummaryCard
+            title="Transfers"
+            value={stats.transfers}
+            icon="🔄"
+            color="bg-yellow-100"
+          />
 
-              <p className="
-                text-gray-500
-                text-lg
-              ">
-                Warehouses
-              </p>
-
-              <h2 className="
-                text-5xl
-                font-bold
-                mt-2
-              ">
-                {stats.warehouses}
-              </h2>
-
-            </div>
-
-            <div className="
-              w-20
-              h-20
-              rounded-3xl
-              bg-indigo-100
-              flex
-              items-center
-              justify-center
-              text-4xl
-            ">
-              🏢
-            </div>
-
-          </div>
-
-          {/* Products */}
-
-          <div className="
-            bg-white
-            rounded-3xl
-            p-6
-            shadow-sm
-            border
-            border-gray-100
-            flex
-            items-center
-            justify-between
-          ">
-
-            <div>
-
-              <p className="
-                text-gray-500
-                text-lg
-              ">
-                Products
-              </p>
-
-              <h2 className="
-                text-5xl
-                font-bold
-                text-green-600
-                mt-2
-              ">
-                {stats.products}
-              </h2>
-
-            </div>
-
-            <div className="
-              w-20
-              h-20
-              rounded-3xl
-              bg-green-100
-              flex
-              items-center
-              justify-center
-              text-4xl
-            ">
-              📦
-            </div>
-
-          </div>
-
-          {/* Transfers */}
-
-          <div className="
-            bg-white
-            rounded-3xl
-            p-6
-            shadow-sm
-            border
-            border-gray-100
-            flex
-            items-center
-            justify-between
-          ">
-
-            <div>
-
-              <p className="
-                text-gray-500
-                text-lg
-              ">
-                Transfers
-              </p>
-
-              <h2 className="
-                text-5xl
-                font-bold
-                text-yellow-500
-                mt-2
-              ">
-                {stats.transfers}
-              </h2>
-
-            </div>
-
-            <div className="
-              w-20
-              h-20
-              rounded-3xl
-              bg-yellow-100
-              flex
-              items-center
-              justify-center
-              text-4xl
-            ">
-              🔄
-            </div>
-
-          </div>
-
-          {/* Inventory */}
-
-          <div className="
-            bg-white
-            rounded-3xl
-            p-6
-            shadow-sm
-            border
-            border-gray-100
-            flex
-            items-center
-            justify-between
-          ">
-
-            <div>
-
-              <p className="
-                text-gray-500
-                text-lg
-              ">
-                Inventory Logs
-              </p>
-
-              <h2 className="
-                text-5xl
-                font-bold
-                text-red-500
-                mt-2
-              ">
-                {stats.inventoryLogs}
-              </h2>
-
-            </div>
-
-            <div className="
-              w-20
-              h-20
-              rounded-3xl
-              bg-red-100
-              flex
-              items-center
-              justify-center
-              text-4xl
-            ">
-              📋
-            </div>
-
-          </div>
+          <SummaryCard
+            title="Inventory Logs"
+            value={stats.inventoryLogs}
+            icon="📋"
+            color="bg-red-100"
+          />
 
         </div>
 
-        {/* ================================= */}
         {/* WAREHOUSE ANALYTICS */}
-        {/* ================================= */}
 
         <div className="
           bg-white
@@ -2062,8 +1913,8 @@ const Dashboard = () => {
             flex
             flex-col
             xl:flex-row
+            justify-between
             xl:items-center
-            xl:justify-between
             gap-6
             mb-8
           ">
@@ -2088,6 +1939,7 @@ const Dashboard = () => {
             </div>
 
             <select
+
               value={
                 selectedWarehouse
               }
@@ -2121,7 +1973,7 @@ const Dashboard = () => {
                   }
 
                   value={
-                    warehouse.name
+                    warehouse._id
                   }
                 >
                   {warehouse.name}
@@ -2144,109 +1996,33 @@ const Dashboard = () => {
             mb-8
           ">
 
-            {/* PRODUCTS */}
+            <AnalyticsCard
+              title="Products"
+              value={totalProducts}
+              color="text-green-600"
+              bg="bg-green-50"
+            />
 
-            <div className="
-              bg-green-50
-              rounded-3xl
-              p-6
-            ">
+            <AnalyticsCard
+              title="Total Stock"
+              value={totalStock}
+              color="text-indigo-600"
+              bg="bg-indigo-50"
+            />
 
-              <p className="
-                text-gray-600
-                text-lg
-              ">
-                Products
-              </p>
+            <AnalyticsCard
+              title="Stock IN"
+              value={stockIn}
+              color="text-blue-600"
+              bg="bg-blue-50"
+            />
 
-              <h3 className="
-                text-5xl
-                font-bold
-                text-green-600
-                mt-3
-              ">
-                {totalProducts}
-              </h3>
-
-            </div>
-
-            {/* STOCK */}
-
-            <div className="
-              bg-indigo-50
-              rounded-3xl
-              p-6
-            ">
-
-              <p className="
-                text-gray-600
-                text-lg
-              ">
-                Total Stock
-              </p>
-
-              <h3 className="
-                text-5xl
-                font-bold
-                text-indigo-600
-                mt-3
-              ">
-                {totalStock}
-              </h3>
-
-            </div>
-
-            {/* IN */}
-
-            <div className="
-              bg-blue-50
-              rounded-3xl
-              p-6
-            ">
-
-              <p className="
-                text-gray-600
-                text-lg
-              ">
-                Stock IN
-              </p>
-
-              <h3 className="
-                text-5xl
-                font-bold
-                text-blue-600
-                mt-3
-              ">
-                {stockIn}
-              </h3>
-
-            </div>
-
-            {/* OUT */}
-
-            <div className="
-              bg-red-50
-              rounded-3xl
-              p-6
-            ">
-
-              <p className="
-                text-gray-600
-                text-lg
-              ">
-                Stock OUT
-              </p>
-
-              <h3 className="
-                text-5xl
-                font-bold
-                text-red-600
-                mt-3
-              ">
-                {stockOut}
-              </h3>
-
-            </div>
+            <AnalyticsCard
+              title="Stock OUT"
+              value={stockOut}
+              color="text-red-600"
+              bg="bg-red-50"
+            />
 
           </div>
 
@@ -2259,141 +2035,96 @@ const Dashboard = () => {
             gap-6
           ">
 
-            {/* BAR CHART */}
+            {/* BAR */}
 
-            <div className="
-              bg-gray-50
-              rounded-3xl
-              p-6
-            ">
+            <ChartCard
+              title="Warehouse Operations"
+            >
 
-              <h3 className="
-                text-3xl
-                font-bold
-                mb-5
-              ">
-                Warehouse Operations
-              </h3>
+              <ResponsiveContainer
+                width="100%"
+                height={320}
+              >
 
-              <div className="
-                h-[340px]
-              ">
-
-                <ResponsiveContainer
-                  width="100%"
-                  height="100%"
+                <BarChart
+                  data={analyticsData}
                 >
 
-                  <BarChart
-                    data={
-                      analyticsData
-                    }
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                  />
+
+                  <XAxis
+                    dataKey="name"
+                  />
+
+                  <YAxis />
+
+                  <Tooltip />
+
+                  <Bar
+                    dataKey="value"
+                    radius={[
+                      10,
+                      10,
+                      0,
+                      0,
+                    ]}
                   >
 
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                    />
+                    <Cell fill="#22C55E" />
+                    <Cell fill="#4F46E5" />
+                    <Cell fill="#3B82F6" />
+                    <Cell fill="#EF4444" />
 
-                    <XAxis
-                      dataKey="name"
-                    />
+                  </Bar>
 
-                    <YAxis />
+                </BarChart>
 
-                    <Tooltip />
+              </ResponsiveContainer>
 
-                    <Bar
-                      dataKey="value"
-                      radius={[
-                        10,
-                        10,
-                        0,
-                        0,
-                      ]}
-                    >
-
-                      <Cell fill="#22C55E" />
-
-                      <Cell fill="#4F46E5" />
-
-                      <Cell fill="#3B82F6" />
-
-                      <Cell fill="#EF4444" />
-
-                    </Bar>
-
-                  </BarChart>
-
-                </ResponsiveContainer>
-
-              </div>
-
-            </div>
+            </ChartCard>
 
             {/* PIE */}
 
-            <div className="
-              bg-gray-50
-              rounded-3xl
-              p-6
-            ">
+            <ChartCard
+              title="Inventory Flow"
+            >
 
-              <h3 className="
-                text-3xl
-                font-bold
-                mb-5
-              ">
-                Inventory Flow
-              </h3>
+              <ResponsiveContainer
+                width="100%"
+                height={320}
+              >
 
-              <div className="
-                h-[340px]
-              ">
+                <PieChart>
 
-                <ResponsiveContainer
-                  width="100%"
-                  height="100%"
-                >
+                  <Pie
+                    data={analyticsData}
+                    dataKey="value"
+                    outerRadius={120}
+                    label
+                  >
 
-                  <PieChart>
+                    <Cell fill="#22C55E" />
+                    <Cell fill="#4F46E5" />
+                    <Cell fill="#3B82F6" />
+                    <Cell fill="#EF4444" />
 
-                    <Pie
-                      data={
-                        analyticsData
-                      }
+                  </Pie>
 
-                      dataKey="value"
+                  <Tooltip />
 
-                      outerRadius={120}
+                  <Legend />
 
-                      label
-                    >
+                </PieChart>
 
-                      <Cell fill="#22C55E" />
+              </ResponsiveContainer>
 
-                      <Cell fill="#4F46E5" />
-
-                      <Cell fill="#3B82F6" />
-
-                      <Cell fill="#EF4444" />
-
-                    </Pie>
-
-                    <Tooltip />
-
-                    <Legend />
-
-                  </PieChart>
-
-                </ResponsiveContainer>
-
-              </div>
-
-            </div>
+            </ChartCard>
 
           </div>
 
-          {/* PRODUCT STOCK TREND */}
+          {/* PRODUCT TREND */}
 
           <div className="
             bg-gray-50
@@ -2410,45 +2141,37 @@ const Dashboard = () => {
               Product Stock Trend
             </h3>
 
-            <div className="
-              h-[350px]
-            ">
+            <ResponsiveContainer
+              width="100%"
+              height={320}
+            >
 
-              <ResponsiveContainer
-                width="100%"
-                height="100%"
+              <LineChart
+                data={stockTrendData}
               >
 
-                <LineChart
-                  data={
-                    stockTrendData
-                  }
-                >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                />
 
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                  />
+                <XAxis
+                  dataKey="name"
+                />
 
-                  <XAxis
-                    dataKey="name"
-                  />
+                <YAxis />
 
-                  <YAxis />
+                <Tooltip />
 
-                  <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="stock"
+                  stroke="#4F46E5"
+                  strokeWidth={4}
+                />
 
-                  <Line
-                    type="monotone"
-                    dataKey="stock"
-                    stroke="#4F46E5"
-                    strokeWidth={4}
-                  />
+              </LineChart>
 
-                </LineChart>
-
-              </ResponsiveContainer>
-
-            </div>
+            </ResponsiveContainer>
 
           </div>
 
@@ -2485,10 +2208,8 @@ const Dashboard = () => {
                     rounded-2xl
                     p-5
                     flex
-                    items-center
                     justify-between
-                    border
-                    border-gray-100
+                    items-center
                   "
                 >
 
@@ -2499,34 +2220,24 @@ const Dashboard = () => {
                       text-lg
                     ">
                       {
-                        log.productName
+                        log.productName ||
+                        log.productId?.name
                       }
                     </h4>
 
                     <p className="
                       text-gray-500
                     ">
-                      {
-                        log.type
-                      }{" "}
-                      operation
+                      {log.type}
                     </p>
 
                   </div>
 
                   <div className="
-                    text-right
+                    font-bold
+                    text-xl
                   ">
-
-                    <p className="
-                      font-bold
-                      text-xl
-                    ">
-                      {
-                        log.quantity
-                      }
-                    </p>
-
+                    {log.quantity}
                   </div>
 
                 </div>
@@ -2540,7 +2251,131 @@ const Dashboard = () => {
         </div>
 
       </div>
+
     </DashboardLayout>
   );
 };
+
+/* ================================= */
+/* SUMMARY CARD */
+/* ================================= */
+
+const SummaryCard = ({
+  title,
+  value,
+  icon,
+  color,
+}) => (
+
+  <div className="
+    bg-white
+    rounded-3xl
+    p-6
+    shadow-sm
+    border
+    border-gray-100
+    flex
+    items-center
+    justify-between
+  ">
+
+    <div>
+
+      <p className="
+        text-gray-500
+        text-lg
+      ">
+        {title}
+      </p>
+
+      <h2 className="
+        text-5xl
+        font-bold
+        mt-2
+      ">
+        {value}
+      </h2>
+
+    </div>
+
+    <div className={`
+      w-20
+      h-20
+      rounded-3xl
+      ${color}
+      flex
+      items-center
+      justify-center
+      text-4xl
+    `}>
+      {icon}
+    </div>
+
+  </div>
+);
+
+/* ================================= */
+/* ANALYTICS CARD */
+/* ================================= */
+
+const AnalyticsCard = ({
+  title,
+  value,
+  color,
+  bg,
+}) => (
+
+  <div className={`
+    ${bg}
+    rounded-3xl
+    p-6
+  `}>
+
+    <p className="
+      text-gray-600
+      text-lg
+    ">
+      {title}
+    </p>
+
+    <h3 className={`
+      text-5xl
+      font-bold
+      mt-3
+      ${color}
+    `}>
+      {value}
+    </h3>
+
+  </div>
+);
+
+/* ================================= */
+/* CHART CARD */
+/* ================================= */
+
+const ChartCard = ({
+  title,
+  children,
+}) => (
+
+  <div className="
+    bg-gray-50
+    rounded-3xl
+    p-6
+  ">
+
+    <h3 className="
+      text-3xl
+      font-bold
+      mb-5
+    ">
+      {title}
+    </h3>
+
+    {children}
+
+  </div>
+);
+
 export default Dashboard;
