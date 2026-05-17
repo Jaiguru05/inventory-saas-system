@@ -146,16 +146,17 @@
 
 //     }
 //   };
-const Inventory = require("../models/InventoryLog");
+const InventoryLog = require("../models/InventoryLog");
 const Product = require("../models/Product");
+const Warehouse = require("../models/Warehouse");
 
 
 
-// CREATE INVENTORY LOG + UPDATE STOCK
-exports.createInventory = async (req, res) => {
-
+// =========================================
+// UPDATE INVENTORY
+// =========================================
+exports.updateInventory = async (req, res) => {
   try {
-
     const {
       productId,
       warehouseId,
@@ -164,9 +165,7 @@ exports.createInventory = async (req, res) => {
       note,
     } = req.body;
 
-
-
-    // VALIDATION
+    // VALIDATE
     if (
       !productId ||
       !warehouseId ||
@@ -174,155 +173,125 @@ exports.createInventory = async (req, res) => {
       !quantity
     ) {
       return res.status(400).json({
-        message: "All fields are required",
+        error: "All fields are required",
       });
     }
 
+    // FIND PRODUCT
+    const product = await Product.findById(productId);
 
-
-    // FIND PRODUCT INSIDE SELECTED WAREHOUSE
-    const product =
-      await Product.findOne({
-        _id: productId,
-        warehouseId,
-      });
-
-
-
-    // PRODUCT NOT FOUND
     if (!product) {
-
       return res.status(404).json({
-        message:
-          "Product not found in selected warehouse",
+        error: "Product not found",
       });
-
     }
 
+    // FIND WAREHOUSE
+    const warehouse =
+      await Warehouse.findById(warehouseId);
 
-
-    // STOCK OUT VALIDATION
-    if (
-      type === "OUT" &&
-      product.quantity < Number(quantity)
-    ) {
-
-      return res.status(400).json({
-        message:
-          "Insufficient stock available",
+    if (!warehouse) {
+      return res.status(404).json({
+        error: "Warehouse not found",
       });
-
     }
 
+    const qty = Number(quantity);
 
-
-    // UPDATE STOCK
+    // STOCK IN
     if (type === "IN") {
-
-      product.quantity =
-        product.quantity + Number(quantity);
-
-    } else {
-
-      product.quantity =
-        product.quantity - Number(quantity);
-
+      product.quantity += qty;
     }
 
+    // STOCK OUT
+    else if (type === "OUT") {
 
+      if (product.quantity < qty) {
+        return res.status(400).json({
+          error:
+            "Not enough stock available",
+        });
+      }
 
-    // SAVE UPDATED PRODUCT
+      product.quantity -= qty;
+    }
+
+    // SAVE PRODUCT
     await product.save();
 
-
-
     // CREATE INVENTORY LOG
-    const inventory =
-      await Inventory.create({
+    const log =
+      await InventoryLog.create({
 
         companyName:
-          product.companyName,
+          req.user.companyName,
 
-        productId,
+        productId: product._id,
 
-        warehouseId,
+        warehouseId:
+          warehouse._id,
 
         type,
 
-        quantity: Number(quantity),
+        quantity: qty,
 
-        note,
+        note:
+          note || type,
 
       });
 
-
-
-    // POPULATE RESPONSE
-    const populatedInventory =
-      await Inventory.findById(
-        inventory._id
-      )
-        .populate("productId")
-        .populate("warehouseId");
-
-
-
     res.status(201).json({
-      message:
-        "Inventory updated successfully",
-
-      inventory:
-        populatedInventory,
+      success: true,
+      product,
+      log,
     });
 
-  } catch (error) {
+  } catch (err) {
 
     console.log(
-      "INVENTORY ERROR:"
+      "INVENTORY ERROR:",
+      err
     );
 
-    console.log(error);
-
-
-
     res.status(500).json({
-      message:
+      error:
         "Failed to update inventory",
-
-      error: error.message,
     });
-
   }
 };
 
 
 
-// GET ALL INVENTORY LOGS
-exports.getInventory = async (req, res) => {
+// =========================================
+// GET INVENTORY LOGS
+// =========================================
+exports.getInventoryLogs =
+  async (req, res) => {
 
-  try {
+    try {
 
-    const inventoryLogs =
-      await Inventory.find()
+      const logs =
+        await InventoryLog.find({
 
-        .populate("productId")
+          companyName:
+            req.user.companyName,
 
-        .populate("warehouseId")
+        })
+          .populate("productId")
+          .populate("warehouseId")
+          .sort({
+            createdAt: -1,
+          });
 
-        .sort({ createdAt: -1 });
+      res.json(logs);
 
+    } catch (err) {
 
+      console.log(err);
 
-    res.json(inventoryLogs);
-
-  } catch (error) {
-
-    console.log(error);
-
-    res.status(500).json({
-      message:
-        "Failed to fetch inventory logs",
-    });
-
-  }
-};
+      res.status(500).json({
+        error:
+          "Failed to fetch inventory logs",
+      });
+    }
+  };
